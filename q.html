@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>革命军集团</title>
+    <style>
+        /* 全局样式 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #000000);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* 导航栏 */
+        #navbar {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            text-align: center;
+        }
+        #navbar h1 {
+            font-size: 2.5rem;
+            color: #e74c3c;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+        #navbar p {
+            font-size: 1rem;
+            color: #ccc;
+            margin-top: 10px;
+        }
+
+        /* 图标容器 */
+        #wrapper {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        #wrapper img {
+            width: 64px;
+            transition: width 0.3s ease;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div id="navbar">
+        <h1>革命军集团</h1>
+        <p>为未来而战，为胜利而生</p>
+    </div>
+
+    <!-- 图标容器 -->
+    <div id="wrapper">
+        <img src="icon1.png" alt="Icon 1">
+        <img src="icon2.png" alt="Icon 2">
+        <img src="icon3.png" alt="Icon 3">
+        <img src="icon4.png" alt="Icon 4">
+        <img src="icon5.png" alt="Icon 5">
+    </div>
+
+    <script>
+        // 保留原有的动画效果
+        window.onload = function() {
+            document.onmousemove = function(ev) {
+                var oevent = ev || event;
+                var aimg = document.getElementsByTagName('img');
+                var odiv = document.getElementById('wrapper');
+                for (var i = 0; i < aimg.length; i++) {
+                    var x = aimg[i].offsetLeft + aimg[i].offsetWidth / 2;
+                    var y = aimg[i].offsetTop + odiv.offsetTop + aimg[i].offsetHeight / 2;
+                    var a = x - oevent.clientX;
+                    var b = y - oevent.clientY;
+                    var dis = parseInt(Math.sqrt(a * a + b * b));
+                    var scale = 1 - dis / 200;
+                    if (scale < 0.5) {
+                        scale = 0.5;
+                    }
+                    aimg[i].width = scale * 128;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
