@@ -1,83 +1,199 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="zh-CN">
 <head>
-
-    <meta charset="utf-8">
-
-    <title></title>
-
-    <style type="text/css">
-
-        *{margin: 0;padding:0;}
-
-        #wrapper{position: absolute;bottom: 0;text-align: center;width: 100%;}
-
-    </style>
-
-    <script type="text/javascript">
-
-        window.onload=function(){
-
-           document.onmousemove=function(ev){
-
-               var oevent=ev||event;
-
-               var aimg=document.getElementsByTagName('img');
-
-               var odiv=document.getElementById('wrapper');
-
-               for(var i=0;i<aimg.length;i++){
-
-                      var x=aimg[i].offsetLeft+aimg[i].offsetWidth/2;
-
-                      var y=aimg[i].offsetTop+odiv.offsetTop+aimg[i].offsetHeight/2;
-
-                      var a=x-oevent.clientX;
-
-                      var b=y-oevent.clientY;
-
-                      var dis=parseInt(Math.sqrt(a*a+b*b));
-
-                      var scale=1-dis/200;
-
-                    if(scale<0.5){
-
-                        scale=0.5;
-
-                    }
-
-                    aimg[i].width=scale*128;
-
-
-
-               }
-
-           }
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>iOS 锁屏界面</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background: url('https://images.unsplash.com/photo-1499358517822-d8578907a095') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            overflow: hidden;
+            color: white;
         }
-
-    </script>
-
+        .backdrop-blur-md {
+            backdrop-filter: blur(12px);
+        }
+        .transition-transform {
+            transition: transform 0.3s ease;
+        }
+        .icon-shadow {
+            filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.3));
+        }
+        .ease-in-out {
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .charging-battery {
+            color: green;
+        }
+    </style>
 </head>
+<body class="flex flex-col items-center justify-between p-4 relative" ontouchmove="event.preventDefault();">
+    <div class="absolute top-0 left-0 w-full h-full bg-black opacity-30 z-[-1]"></div>
+    <div class="w-full flex justify-between text-sm font-semibold py-2 px-4">
+        <div class="time-indicator">9:41</div>
+        <div class="status-icons flex space-x-2">
+            <!-- 模拟信号强度 -->
+            <span class="signal icon-shadow"><i class="fa-solid fa-signal"></i></span>
+            <!-- 模拟Wi-Fi强度 -->
+            <span class="wifi icon-shadow"><i class="fa-solid fa-wifi"></i></span>
+            <span class="battery icon-shadow charging-battery"><i class="fa-solid fa-battery-full fa-bolt"></i> 100%</span>
+        </div>
+    </div>
+    <div class="text-center mt-12">
+        <div class="time text-8xl font-light tracking-tighter mb-[-4px]" id="time">10:24</div>
+        <div class="date text-xl font-normal" id="date">2023年6月15日 星期四</div>
+    </div>
+    <div class="w-full max-w-md mt-6 bg-white/15 backdrop-blur-md rounded-xl p-4 hidden ease-in-out duration-300" id="notifications">
+        <div class="notification flex items-center py-3 border-b border-white/15">
+            <div class="notification-icon w-12 h-12 bg-white/25 rounded-lg flex items-center justify-center mr-4 text-2xl icon-shadow"><i class="fa-solid fa-message"></i></div>
+            <div class="notification-content flex-1">
+                <div class="notification-title font-semibold mb-1.5">信息</div>
+                <div class="notification-text text-base opacity-80">您有一条新消息</div>
+            </div>
+        </div>
+        <div class="notification flex items-center py-3">
+            <div class="notification-icon w-12 h-12 bg-white/25 rounded-lg flex items-center justify-center mr-4 text-2xl icon-shadow"><i class="fa-solid fa-envelope"></i></div>
+            <div class="notification-content flex-1">
+                <div class="notification-title font-semibold mb-1.5">邮件</div>
+                <div class="notification-text text-base opacity-80">新的工作邮件</div>
+            </div>
+        </div>
+    </div>
+    <div class="w-full text-center mb-12 relative">
+        <div class="unlock-hint text-base font-medium mb-5 opacity-90">向上轻扫打开</div>
+        <div class="unlock-bar w-36 h-1.5 bg-white rounded-md mx-auto opacity-80"></div>
+        <div class="camera-button absolute right-10 bottom-3 w-14 h-14 bg-white/25 rounded-full flex items-center justify-center text-2xl hover:bg-white/35 transition-colors icon-shadow"><i class="fa-solid fa-camera"></i></div>
+        <div class="emergency-button absolute left-10 bottom-5 text-base font-medium">快速拨号</div>
+    </div>
+    <div class="absolute bottom-[-320px] w-full bg-white/15 backdrop-blur-md rounded-t-2xl p-6 transition-transform ease-in-out duration-300" id="controlCenter">
+        <div class="grid grid-cols-4 gap-6">
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="flight-mode">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-plane"></i></div>
+                <div class="control-text text-sm font-medium">飞行模式</div>
+            </div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="cellular-data">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-signal"></i></div>
+                <div class="control-text text-sm font-medium">蜂窝数据</div>
+            </div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="wifi">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-wifi"></i></div>
+                <div class="control-text text-sm font-medium">Wi-Fi</div>
+            </div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="bluetooth">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-bluetooth"></i></div>
+                <div class="control-text text-sm font-medium">蓝牙</div>
+            </div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="flashlight">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-flashlight"></i></div>
+                <div class="control-text text-sm font-medium">手电筒</div>
+            </div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="timer">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-stopwatch"></i></div>
+                <div class="control-text text-sm font-medium">计时器</div>
+            </div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="calculator">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-calculator"></i></div>
+                <div class="control-text text-sm font-medium">计算器</div>
+            </div>
+            <div class="control-item bg-white/25 rounded-2xl h-20 flex flex-col items-center justify-center hover:bg-white/35 transition-colors icon-shadow" data-function="camera">
+                <div class="control-icon text-3xl mb-2"><i class="fa-solid fa-camera"></i></div>
+                <div class="control-text text-sm font-medium">相机</div>
+            </div>
+        </div>
+    </div>
+    <div class="absolute bottom-4 w-full text-center text-base opacity-80">从底部向上轻扫打开控制中心</div>
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const timeElement = document.getElementById('time');
+            const dateElement = document.getElementById('date');
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            timeElement.textContent = `${hours}:${minutes}`;
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = now.toLocaleDateString('zh-CN', options);
+            document.querySelector('.time-indicator').textContent = `${hours}:${minutes}`;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+        const controlCenter = document.getElementById('controlCenter');
+        const notifications = document.getElementById('notifications');
+        let startY = 0;
+        let currentY = 0;
+        document.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+        document.addEventListener('touchmove', function(e) {
+            currentY = e.touches[0].clientY;
+            const diff = startY - currentY;
+            if (diff > 50 && !controlCenter.classList.contains('show')) {
+                controlCenter.classList.add('show');
+                controlCenter.style.transform = 'translateY(-320px)';
+                notifications.style.display = 'none';
+            }
+            if (diff < -50 && controlCenter.classList.contains('show')) {
+                controlCenter.classList.remove('show');
+                controlCenter.style.transform = 'translateY(0)';
+                notifications.style.display = 'block';
+            }
+        }, { passive: true });
+        document.addEventListener('click', function(e) {
+            if (!controlCenter.contains(e.target)) {
+                if (controlCenter.classList.contains('show')) {
+                    controlCenter.classList.remove('show');
+                    controlCenter.style.transform = 'translateY(0)';
+                    notifications.style.display = 'block';
+                } else {
+                    if (!controlCenter.classList.contains('show') && 
+                        e.target !== controlCenter && 
+                        !controlCenter.contains(e.target)) {
+                        notifications.style.display = notifications.style.display === 'none' ? 'block' : 'none';
+                    }
+                }
+            }
+        });
+        notifications.style.display = 'block';
 
-<body>
-
-<div id="wrapper">
-
-    <img src="https://img0.baidu.com/it/u=4041507410,3465774008&fm=253&fmt=auto&app=138&f=JPEG?w=366&h=370" width="64">
-
-    <img src="https://img0.baidu.com/it/u=1825875380,2821254060&fm=253&fmt=auto&app=120&f=PNG?w=555&h=370" width="64">
-
-    <img src="3.png" width="64">
-
-    <img src="4.png" width="64">
-
-    <img src="5.png" width="64">
-
-</div>
-
+        // 为控制中心的功能按钮添加点击事件监听器
+        const controlItems = document.querySelectorAll('.control-item');
+        controlItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const functionName = this.dataset.function;
+                switch (functionName) {
+                    case 'flight-mode':
+                        alert('飞行模式已切换');
+                        break;
+                    case 'cellular-data':
+                        alert('蜂窝数据已切换');
+                        break;
+                    case 'wifi':
+                        alert('Wi-Fi已切换');
+                        break;
+                    case 'bluetooth':
+                        alert('蓝牙已切换');
+                        break;
+                    case 'flashlight':
+                        alert('手电筒已切换');
+                        break;
+                    case 'timer':
+                        alert('计时器已启动');
+                        break;
+                    case 'calculator':
+                        alert('计算器已打开');
+                        break;
+                    case 'camera':
+                        alert('相机已打开');
+                        break;
+                }
+            });
+        });
+    </script>
 </body>
-
 </html>
+    
